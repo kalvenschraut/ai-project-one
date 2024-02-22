@@ -59,31 +59,54 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem: SearchProblem):
-    """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    currentState = (problem.getStartState(), []);
+    fringe = util.Stack()
+    seen = set()
+    seen.add(currentState[0]);
+    while not problem.isGoalState(currentState[0]):
+        successorStates = problem.getSuccessors(currentState[0]);
+        for state in successorStates:
+            if not state[0] in seen:
+                fringe.push((state[0], [*currentState[1], state[1]]))
+        if fringe.isEmpty():
+            raise ValueError('Fringe is empty but did not find a solution')
+        currentState = fringe.pop()
+        seen.add(currentState[0])
+    return currentState[1];
 
 def breadthFirstSearch(problem: SearchProblem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    currentState = (problem.getStartState(), []);
+    fringe = util.Queue()
+    seen = set()
+    seen.add(currentState[0]);
+    while not problem.isGoalState(currentState[0]):
+        successorStates = problem.getSuccessors(currentState[0]);
+        for state in successorStates:
+            if not state[0] in seen:
+                seen.add(state[0])
+                fringe.push((state[0], [*currentState[1], state[1]]))
+        if fringe.isEmpty():
+            raise ValueError('Fringe is empty but did not find a solution')
+        currentState = fringe.pop()
+    return currentState[1];
 
 def uniformCostSearch(problem: SearchProblem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    currentState = (problem.getStartState(), [], 0)
+    fringe = util.PriorityQueue()
+    seen = { currentState[0]: 0 }
+    while not problem.isGoalState(currentState[0]):
+        successorStates = problem.getSuccessors(currentState[0])
+        for state in successorStates:
+            # make sure cost is the total cost of travel, not just the next step
+            totalCost = state[2] + currentState[2]
+            # double check if the already seen node has a cheap path to it
+            if not state[0] in seen or totalCost < seen[state[0]]:
+                seen[state[0]] = totalCost
+                fringe.push((state[0], [*currentState[1], state[1]], totalCost), totalCost)
+        if fringe.isEmpty():
+            raise ValueError('Fringe is empty but did not find a solution')
+        currentState = fringe.pop()
+    return currentState[1];
 
 def nullHeuristic(state, problem=None):
     """
