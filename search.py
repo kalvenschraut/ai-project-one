@@ -99,7 +99,8 @@ def uniformCostSearch(problem: SearchProblem):
         for state in successorStates:
             # make sure cost is the total cost of travel, not just the next step
             totalCost = state[2] + currentState[2]
-            # double check if the already seen node has a cheap path to it
+            # check if the node has already been seen or
+            # if there is a new discovered path that is cheaper
             if not state[0] in seen or totalCost < seen[state[0]]:
                 seen[state[0]] = totalCost
                 fringe.push((state[0], [*currentState[1], state[1]], totalCost), totalCost)
